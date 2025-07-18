@@ -1,0 +1,61 @@
+{
+  "name": "codecontext-pro-monorepo",
+  "version": "1.0.1",
+  "description": "CodeContext Pro - Stop paying for AI amnesia. Complete AI assistant memory and execution system.",
+  "private": true,
+  "workspaces": [
+    "cli",
+    "execution-engine"
+  ],
+  "scripts": {
+    "build": "npm run build:cli && npm run build:execution",
+    "build:cli": "cd cli && npm run build",
+    "build:execution": "cd execution-engine && npm run build",
+    "install:all": "npm install && npm run install:cli && npm run install:execution",
+    "install:cli": "cd cli && npm install",
+    "install:execution": "cd execution-engine && npm install",
+    "publish:cli": "cd cli && npm publish",
+    "test": "npm run test:cli && npm run test:execution",
+    "test:cli": "cd cli && npm test",
+    "test:execution": "cd execution-engine && npm test",
+    "clean": "rm -rf cli/dist execution-engine/dist",
+    "dev:cli": "cd cli && npm run dev",
+    "dev:execution": "cd execution-engine && npm run dev",
+    "start:execution": "cd execution-engine && npm start"
+  },
+  "keywords": [
+    "ai",
+    "artificial-intelligence",
+    "coding-assistant",
+    "memory",
+    "context",
+    "execution",
+    "docker",
+    "cli",
+    "developer-tools",
+    "productivity",
+    "goldfish-mode",
+    "persistent-memory"
+  ],
+  "author": "CodeContext Pro Team <hello@codecontextpro.com>",
+  "license": "MIT",
+  "homepage": "https://codecontextpro.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jahboukie/code-contextpro-memory.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jahboukie/code-contextpro-memory/issues"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0",
+    "lerna": "^6.4.1"
+  },
+  "dependencies": {
+    "firebase-functions": "^6.3.2",
+    "stripe": "^18.3.0"
+  }
+}

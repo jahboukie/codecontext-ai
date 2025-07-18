@@ -1,0 +1,50 @@
+{
+  "name": "codecontext-execution-engine",
+  "version": "0.1.0",
+  "description": "CodeContext Pro Phase 2: Execution Engine - AI Assistant Code Verification System",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "ts-node src/index.ts",
+    "start": "node dist/index.js",
+    "test": "jest",
+    "docker:build": "docker build -t codecontext-executor .",
+    "docker:run": "docker run --rm -v $(pwd)/sandbox:/sandbox codecontext-executor"
+  },
+  "keywords": [
+    "ai",
+    "execution",
+    "sandbox",
+    "verification",
+    "docker",
+    "testing"
+  ],
+  "author": "CodeContext Pro Team",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "dockerode": "^3.3.5",
+    "express": "^4.18.2",
+    "fs-extra": "^10.1.0",
+    "ora": "^5.4.1",
+    "uuid": "^9.0.0",
+    "ws": "^8.13.0"
+  },
+  "devDependencies": {
+    "@types/dockerode": "^3.3.42",
+    "@types/express": "^4.17.17",
+    "@types/fs-extra": "^9.0.13",
+    "@types/jest": "^29.0.0",
+    "@types/node": "^18.0.0",
+    "@types/stripe": "^8.0.416",
+    "@types/uuid": "^8.3.4",
+    "@types/ws": "^8.5.5",
+    "jest": "^29.0.0",
+    "stripe": "^18.3.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^4.9.5"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

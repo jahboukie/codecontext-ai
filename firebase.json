@@ -1,0 +1,27 @@
+{
+  "emulators": {
+    "apphosting": {
+      "port": 5002,
+      "rootDirectory": "./codecontext-pro-web",
+      "startCommand": "npm run dev"
+    },
+    "ui": {
+      "enabled": true,
+      "port": 4000
+    },
+    "singleProjectMode": true
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ]
+    }
+  ]
+}
