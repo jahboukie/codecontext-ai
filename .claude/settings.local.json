@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm uninstall:*)",
+      "Bash(node:*)",
+      "Bash(ls:*)",
+      "Bash(rm:*)",
+      "Bash(docker logs:*)"
+    ],
+    "deny": []
+  }
+}

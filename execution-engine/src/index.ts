@@ -1,5 +1,6 @@
 import express from 'express';
-import { ExecutionEngine, ExecutionRequest, ExecutionResult } from './executionEngine';
+import { ExecutionRequest, ExecutionResult } from './executionEngine';
+import { SecureExecutionEngine } from './secureExecutionEngine';
 import { ExecutionMemoryManager } from './memoryIntegration';
 import chalk from 'chalk';
 import * as path from 'path';
@@ -7,8 +8,8 @@ import * as path from 'path';
 const app = express();
 app.use(express.json());
 
-// Initialize execution engine and memory integration
-const executionEngine = new ExecutionEngine();
+// 🛡️ SECURITY: Initialize SECURE execution engine with comprehensive protection
+const secureExecutionEngine = new SecureExecutionEngine();
 let memoryManager: ExecutionMemoryManager;
 
 // Initialize memory manager with project context
@@ -35,8 +36,8 @@ app.post('/execute', async (req, res) => {
       }
     }
     
-    // Execute the code
-    const result = await executionEngine.executeCode(request);
+    // 🛡️ SECURITY: Execute code with comprehensive security protection
+    const result = await secureExecutionEngine.executeCode(request);
     
     // Record execution in memory for learning
     if (memoryManager) {
@@ -153,6 +154,23 @@ app.get('/health', (req, res) => {
   });
 });
 
+// 🛡️ SECURITY: Security status endpoint
+app.get('/security/status', (req, res) => {
+  try {
+    const securityStatus = secureExecutionEngine.getSecurityStatus();
+    res.json({
+      status: 'secure',
+      timestamp: new Date().toISOString(),
+      ...securityStatus
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
 // Initialize and start server
 async function startServer() {
   const port = process.env.PORT || 3001;
@@ -198,4 +216,4 @@ if (require.main === module) {
   });
 }
 
-export { app, ExecutionEngine, ExecutionMemoryManager };
+export { app, SecureExecutionEngine, ExecutionMemoryManager };

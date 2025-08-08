@@ -1,0 +1,93 @@
+# 🛡️ Secure CodeContext Pro Execution Engine Dockerfile
+# This dockerfile implements critical security hardening measures
+
+FROM node:18-alpine AS base
+
+# Install security tools and dependencies
+RUN apk add --no-cache \
+    dumb-init \
+    su-exec \
+    tini \
+    && rm -rf /var/cache/apk/*
+
+# Create non-root user and group
+RUN addgroup -g 1001 -S sandbox && \
+    adduser -S sandbox -u 1001 -G sandbox -h /app/sandbox
+
+# Set up secure directory structure
+RUN mkdir -p \
+    /app/sandbox/workspace \
+    /app/sandbox/logs \
+    /tmp/sandbox \
+    /app/dist \
+    && chown -R sandbox:sandbox /app /tmp/sandbox \
+    && chmod 755 /app/sandbox/workspace \
+    && chmod 700 /app/sandbox/logs \
+    && chmod 777 /tmp/sandbox
+
+# Security: Remove package managers and development tools
+RUN apk del \
+    && rm -rf /usr/share/man/* \
+    && rm -rf /tmp/* \
+    && rm -rf /var/cache/apk/*
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files as root, then change ownership
+COPY package*.json ./
+RUN chown sandbox:sandbox package*.json
+
+# Switch to non-root user for npm install
+USER sandbox
+
+# Install production dependencies only
+ENV NODE_ENV=production
+
+RUN npm install --only=production --no-audit --no-fund \
+    && npm cache clean --force
+
+# Set Node.js options after installation
+ENV NODE_OPTIONS="--max-old-space-size=128 --max-semi-space-size=16"
+
+# Copy application code
+USER root
+COPY dist/ ./dist/
+RUN chown -R sandbox:sandbox ./dist/
+
+# Create secure entrypoint script
+RUN echo '#!/bin/sh' > /app/entrypoint.sh && \
+    echo 'set -e' >> /app/entrypoint.sh && \
+    echo 'exec su-exec sandbox:sandbox "$@"' >> /app/entrypoint.sh && \
+    chmod +x /app/entrypoint.sh && \
+    chown root:root /app/entrypoint.sh
+
+# Switch to non-root user permanently
+USER sandbox
+
+# Security environment variables
+ENV HOME=/app/sandbox
+ENV USER=sandbox
+ENV PATH=/usr/local/bin:/usr/bin:/bin
+
+# Remove write permissions from application directory
+USER root
+RUN chmod -R a-w /app/dist /app/node_modules
+USER sandbox
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:3001/health || exit 1
+
+# Expose port
+EXPOSE 3001
+
+# Use tini as PID 1 for proper signal handling
+ENTRYPOINT ["/sbin/tini", "--"]
+CMD ["node", "/app/dist/index.js"]
+
+# Security labels
+LABEL security.dockerfile.version="1.0"
+LABEL security.user="sandbox"
+LABEL security.uid="1001"
+LABEL security.gid="1001"

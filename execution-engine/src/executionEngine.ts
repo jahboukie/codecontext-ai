@@ -61,7 +61,7 @@ export interface SecurityReport {
   networkAccess: string[];
   processSpawned: string[];
   suspiciousOperations: string[];
-  riskLevel: 'low' | 'medium' | 'high';
+  riskLevel: 'low' | 'medium' | 'high' | 'critical';
 }
 
 export interface ProjectContext {

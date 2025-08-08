@@ -1,0 +1,113 @@
+# 🛡️ Secure Docker Compose Configuration for CodeContext Pro Execution Engine
+# This configuration implements critical security hardening measures
+
+version: '3.8'
+
+services:
+  codecontext-execution-engine:
+    build:
+      context: .
+      dockerfile: Dockerfile.secure
+    container_name: codecontext-execution-secure
+    
+    # 🔒 CRITICAL SECURITY CONFIGURATION
+    security_opt:
+      - no-new-privileges:true
+      - apparmor:docker-default
+      - seccomp:./config/seccomp-profile.json
+    
+    # 🔒 REMOVE ALL LINUX CAPABILITIES (run with minimal privileges)
+    cap_drop:
+      - ALL
+    cap_add:
+      - SETUID
+      - SETGID
+    
+    # 🔒 READ-ONLY ROOT FILESYSTEM (prevent file system tampering)
+    read_only: true
+    
+    # 🔒 TEMPORARY FILESYSTEMS (only writable areas)
+    tmpfs:
+      - /tmp:size=100m,noexec,nosuid,nodev,uid=1001,gid=1001
+      - /var/tmp:size=10m,noexec,nosuid,nodev,uid=1001,gid=1001
+      - /app/sandbox/workspace:size=50m,noexec,nosuid,nodev,uid=1001,gid=1001
+      - /app/sandbox/logs:size=20m,noexec,nosuid,nodev,uid=1001,gid=1001
+    
+    # 🔒 RESOURCE LIMITS (prevent DoS attacks)
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'        # Max 0.5 CPU cores
+          memory: 256M       # Max 256MB RAM
+          pids: 32          # Max 32 processes
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+    
+    # 🔒 PROCESS LIMITS
+    ulimits:
+      nproc: 64              # Max processes per container
+      fsize: 10485760        # Max file size: 10MB
+      cpu: 30                # Max CPU time: 30 seconds
+      as: 268435456          # Max virtual memory: 256MB
+      nofile:                # Max open files
+        soft: 1024
+        hard: 2048
+      memlock: 67108864      # Max locked memory: 64MB
+    
+    # 🔒 NETWORK SECURITY
+    networks:
+      - codecontext-isolated
+    ports:
+      - "3001:3001"
+    
+    # 🔒 ENVIRONMENT RESTRICTIONS
+    environment:
+      - NODE_ENV=production
+      - NODE_OPTIONS=--max-old-space-size=128 --max-executable-size=64
+      - HOME=/app/sandbox
+      - USER=sandbox
+      - TMPDIR=/tmp
+    
+    # 🔒 VOLUME RESTRICTIONS (no host mounts)
+    volumes: []
+    
+    # 🔒 USER CONFIGURATION
+    user: "1001:1001"
+    
+    # 🔒 RESTART POLICY
+    restart: "on-failure:3"
+    
+    # 🔒 LOGGING CONFIGURATION
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "security,execution-engine"
+    
+    # 🔒 HEALTH CHECK
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3001/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    
+    # 🔒 CONTAINER LABELS
+    labels:
+      - "security.level=high"
+      - "security.user=sandbox"
+      - "security.readonly=true"
+      - "security.network=isolated"
+
+# 🔒 ISOLATED NETWORK (no external access by default)
+networks:
+  codecontext-isolated:
+    driver: bridge
+    internal: true  # No external network access
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/16
+          gateway: 172.20.0.1

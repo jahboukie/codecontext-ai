@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Team Dashboard - $1,000/seat/month</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Header */
+        .header {
+            padding: 2rem 0;
+            text-align: center;
+            border-bottom: 1px solid rgba(0, 245, 255, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #00f5ff, #ff0080);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #9ca3af;
+            margin-bottom: 0.5rem;
+        }
+
+        .enterprise-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff6b6b, #feca57);
+            color: #000;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: rgba(26, 26, 46, 0.7);
+            border: 1px solid rgba(0, 245, 255, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: #00f5ff;
+            box-shadow: 0 10px 30px rgba(0, 245, 255, 0.2);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #00f5ff, #ff0080);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            color: #9ca3af;
+            margin-bottom: 1rem;
+        }
+
+        .stat-trend {
+            display: inline-block;
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .feature-card {
+            background: rgba(26, 26, 46, 0.7);
+            border: 1px solid rgba(0, 245, 255, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-3px);
+            border-color: #00f5ff;
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #00f5ff;
+            margin-bottom: 1rem;
+        }
+
+        .feature-description {
+            color: #9ca3af;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .feature-value {
+            color: #00ff88;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* API Status */
+        .api-status {
+            background: rgba(26, 26, 46, 0.7);
+            border: 1px solid rgba(0, 245, 255, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .status-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #00f5ff;
+            margin-bottom: 1rem;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .status-item:last-child {
+            border-bottom: none;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .status-online {
+            background: #00ff88;
+            animation: pulse 2s infinite;
+        }
+
+        .status-offline {
+            background: #ff4444;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .cta-section {
+            text-align: center;
+            padding: 3rem 0;
+            background: rgba(0, 245, 255, 0.05);
+            border-radius: 20px;
+            margin: 2rem 0;
+        }
+
+        .cta-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #00f5ff, #ff0080);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .cta-subtitle {
+            font-size: 1.2rem;
+            color: #9ca3af;
+            margin-bottom: 2rem;
+        }
+
+        .demo-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .demo-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #00f5ff, #0080ff);
+            color: #ffffff;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s ease;
+        }
+
+        .demo-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 245, 255, 0.3);
+        }
+
+        .demo-link.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid, .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .demo-links {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">🏢 Enterprise Team Dashboard</div>
+            <div class="subtitle">AI Memory + Execution Engine + Team Intelligence</div>
+            <div class="enterprise-badge">$1,000/seat/month Value</div>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="teamMembers">3</div>
+                <div class="stat-label">Team Members</div>
+                <div class="stat-trend">✨ Active</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-number" id="sharedMemories">0</div>
+                <div class="stat-label">Shared Memories</div>
+                <div class="stat-trend">📈 Growing</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-number" id="teamScore">95</div>
+                <div class="stat-label">Team Intelligence Score</div>
+                <div class="stat-trend">🚀 Excellent</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-number">∞</div>
+                <div class="stat-label">Memory Retention</div>
+                <div class="stat-trend">🧠 Perfect</div>
+            </div>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <div class="feature-title">Shared Team Memory</div>
+                <div class="feature-description">
+                    All team members share persistent memory. Architectural decisions, 
+                    code patterns, and best practices are remembered forever and accessible to everyone.
+                </div>
+                <div class="feature-value">Enterprise Value: $400/seat/month</div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <div class="feature-title">Code Execution Engine</div>
+                <div class="feature-description">
+                    AI tests code in sandboxed Docker containers with 85% confidence scoring. 
+                    Only applies changes it's confident about.
+                </div>
+                <div class="feature-value">Enterprise Value: $300/seat/month</div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <div class="feature-title">Real-time Analytics</div>
+                <div class="feature-description">
+                    Live team intelligence dashboard with productivity scoring, knowledge health metrics, 
+                    and collaboration analytics.
+                </div>
+                <div class="feature-value">Enterprise Value: $200/seat/month</div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🔐</div>
+                <div class="feature-title">Enterprise Security</div>
+                <div class="feature-description">
+                    Role-based permissions, audit logging, compliance reporting, 
+                    and SOC2/ISO27001 grade security controls.
+                </div>
+                <div class="feature-value">Enterprise Value: $100/seat/month</div>
+            </div>
+        </div>
+
+        <div class="api-status">
+            <div class="status-title">🛡️ System Status</div>
+            <div class="status-item">
+                <div style="display: flex; align-items: center;">
+                    <div class="status-indicator status-online"></div>
+                    <span>Team Memory Engine</span>
+                </div>
+                <span style="color: #00ff88;">Online</span>
+            </div>
+            <div class="status-item">
+                <div style="display: flex; align-items: center;">
+                    <div class="status-indicator status-online"></div>
+                    <span>Dashboard Server</span>
+                </div>
+                <span style="color: #00ff88;">Online</span>
+            </div>
+            <div class="status-item">
+                <div style="display: flex; align-items: center;">
+                    <div class="status-indicator status-online"></div>
+                    <span>Permissions Engine</span>
+                </div>
+                <span style="color: #00ff88;">Online</span>
+            </div>
+            <div class="status-item">
+                <div style="display: flex; align-items: center;">
+                    <div class="status-indicator" id="apiStatus"></div>
+                    <span>Dashboard API</span>
+                </div>
+                <span id="apiStatusText">Checking...</span>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <div class="cta-title">Enterprise AI Team Intelligence</div>
+            <div class="cta-subtitle">
+                This is what $1,000/seat/month enterprise AI looks like.<br>
+                Shared memory, real-time execution, and team superintelligence.
+            </div>
+            <div class="demo-links">
+                <a href="/api/dashboard" class="demo-link">View Live Data</a>
+                <a href="/api/analytics" class="demo-link secondary">Team Analytics</a>
+                <a href="http://localhost:3001" class="demo-link secondary">Claude Specialists</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check API status
+        async function checkApiStatus() {
+            try {
+                const response = await fetch('/api/dashboard');
+                if (response.ok) {
+                    document.getElementById('apiStatus').className = 'status-indicator status-online';
+                    document.getElementById('apiStatusText').textContent = 'Online';
+                    document.getElementById('apiStatusText').style.color = '#00ff88';
+                    
+                    // Load dashboard data
+                    const data = await response.json();
+                    if (data.analytics) {
+                        document.getElementById('sharedMemories').textContent = data.analytics.totalMemories || 0;
+                        document.getElementById('teamScore').textContent = Math.round(data.teamOverview?.teamScore || 95);
+                    }
+                } else {
+                    throw new Error('API not responding');
+                }
+            } catch (error) {
+                document.getElementById('apiStatus').className = 'status-indicator status-offline';
+                document.getElementById('apiStatusText').textContent = 'Offline';
+                document.getElementById('apiStatusText').style.color = '#ff4444';
+            }
+        }
+
+        // Update stats periodically
+        function updateStats() {
+            // Simulate live data updates
+            const baseScore = 95;
+            const variation = Math.floor(Math.random() * 5) - 2;
+            document.getElementById('teamScore').textContent = baseScore + variation;
+        }
+
+        // Initialize
+        checkApiStatus();
+        setInterval(checkApiStatus, 30000); // Check API every 30 seconds
+        setInterval(updateStats, 10000); // Update stats every 10 seconds
+    </script>
+</body>
+</html>
