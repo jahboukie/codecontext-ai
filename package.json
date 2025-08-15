@@ -1,8 +1,7 @@
 {
   "name": "codecontext-pro-monorepo",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "CodeContext (Local Edition) - Fully offline AI assistant memory & execution system.",
-  "private": true,
   "workspaces": [
     "cli",
     "execution-engine"
