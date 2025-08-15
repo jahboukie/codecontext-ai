@@ -1,6 +1,6 @@
 import express from 'express';
 import { ExecutionRequest, ExecutionResult } from './executionEngine';
-import { SecureExecutionEngine } from './secureExecutionEngine';
+import { SimpleExecutionEngine } from './simpleExecutionEngine';
 import { ExecutionMemoryManager } from './memoryIntegration';
 import chalk from 'chalk';
 import * as path from 'path';
@@ -8,52 +8,24 @@ import * as path from 'path';
 const app = express();
 app.use(express.json());
 
-// 🛡️ SECURITY: Initialize SECURE execution engine with comprehensive protection
-const secureExecutionEngine = new SecureExecutionEngine();
-let memoryManager: ExecutionMemoryManager;
+// 🚀 Initialize SIMPLE execution engine without security barriers
+const simpleExecutionEngine = new SimpleExecutionEngine();
+let memoryManager: ExecutionMemoryManager | null = null;
 
-// Initialize memory manager with project context
+// Memory integration disabled for barrier-free execution  
 async function initializeMemoryManager(projectPath: string) {
-  memoryManager = new ExecutionMemoryManager(projectPath);
-  await memoryManager.initialize();
-  console.log(chalk.green('🧠 Memory integration initialized'));
+  console.log(chalk.gray('🧠 Memory integration disabled (barrier-free mode)'));
 }
 
-// Main execution endpoint
+// Main execution endpoint - barrier-free execution
 app.post('/execute', async (req, res) => {
   try {
     const request: ExecutionRequest = req.body;
     
     console.log(chalk.cyan(`🚀 Executing ${request.language} code...`));
     
-    // Predict success probability using memory
-    if (memoryManager) {
-      const prediction = await memoryManager.predictExecutionSuccess(request);
-      console.log(chalk.yellow(`📊 Success probability: ${(prediction.successProbability * 100).toFixed(1)}%`));
-      
-      if (prediction.potentialIssues.length > 0) {
-        console.log(chalk.yellow('⚠️  Potential issues:'), prediction.potentialIssues);
-      }
-    }
-    
-    // 🛡️ SECURITY: Execute code with comprehensive security protection
-    const result = await secureExecutionEngine.executeCode(request);
-    
-    // Record execution in memory for learning
-    if (memoryManager) {
-      await memoryManager.recordExecution(
-        request,
-        result,
-        req.headers['ai-assistant'] as string || 'unknown',
-        req.headers['conversation-id'] as string
-      );
-      
-      // Get improvement suggestions if execution failed
-      if (!result.success) {
-        const improvements = await memoryManager.suggestImprovements(request);
-        result.improvements = improvements;
-      }
-    }
+    // Direct execution without barriers
+    const result = await simpleExecutionEngine.executeCode(request);
     
     // Log result
     if (result.success) {
@@ -77,89 +49,48 @@ app.post('/execute', async (req, res) => {
   }
 });
 
-// Get execution history
+// Get execution history - disabled in barrier-free mode
 app.get('/history', async (req, res) => {
-  try {
-    if (!memoryManager) {
-      return res.status(400).json({ error: 'Memory manager not initialized' });
-    }
-    
-    const { language, successOnly, limit } = req.query;
-    const history = await memoryManager.getExecutionHistory(
-      language as string,
-      successOnly === 'true',
-      parseInt(limit as string) || 50
-    );
-    
-    res.json(history);
-  } catch (error) {
-    res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
-  }
+  res.json({ message: 'History disabled in barrier-free mode', executions: [] });
 });
 
-// Get code patterns
+// Get code patterns - disabled in barrier-free mode
 app.get('/patterns/:language', async (req, res) => {
-  try {
-    if (!memoryManager) {
-      return res.status(400).json({ error: 'Memory manager not initialized' });
-    }
-    
-    const patterns = await memoryManager.getCodePatterns(req.params.language);
-    res.json(patterns);
-  } catch (error) {
-    res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
-  }
+  res.json({ message: 'Patterns disabled in barrier-free mode', patterns: [] });
 });
 
-// Get error patterns
+// Get error patterns - disabled in barrier-free mode
 app.get('/errors/:language', async (req, res) => {
-  try {
-    if (!memoryManager) {
-      return res.status(400).json({ error: 'Memory manager not initialized' });
-    }
-    
-    const errorPatterns = await memoryManager.getErrorPatterns(req.params.language);
-    res.json(errorPatterns);
-  } catch (error) {
-    res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
-  }
+  res.json({ message: 'Error patterns disabled in barrier-free mode', errors: [] });
 });
 
-// Get performance insights
+// Get performance insights - disabled in barrier-free mode  
 app.get('/performance/:language', async (req, res) => {
-  try {
-    if (!memoryManager) {
-      return res.status(400).json({ error: 'Memory manager not initialized' });
-    }
-    
-    const insights = await memoryManager.getPerformanceInsights(req.params.language);
-    res.json(insights);
-  } catch (error) {
-    res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
-  }
+  res.json({ message: 'Performance insights disabled in barrier-free mode', insights: {} });
 });
 
 // Health check
 app.get('/health', (req, res) => {
   res.json({
     status: 'healthy',
+    mode: 'barrier-free',
     timestamp: new Date().toISOString(),
-    memoryInitialized: !!memoryManager,
     features: {
       execution: true,
-      memory: !!memoryManager,
-      prediction: !!memoryManager,
-      learning: !!memoryManager
+      memory: false,
+      prediction: false,
+      learning: false,
+      security: false
     }
   });
 });
 
-// 🛡️ SECURITY: Security status endpoint
+// 🚀 Security status endpoint (no security barriers)
 app.get('/security/status', (req, res) => {
   try {
-    const securityStatus = secureExecutionEngine.getSecurityStatus();
+    const securityStatus = simpleExecutionEngine.getSecurityStatus();
     res.json({
-      status: 'secure',
+      status: 'simple',
       timestamp: new Date().toISOString(),
       ...securityStatus
     });
@@ -175,8 +106,8 @@ app.get('/security/status', (req, res) => {
 async function startServer() {
   const port = process.env.PORT || 3001;
   
-  console.log(chalk.cyan('\n🚀 CodeContext Pro Execution Engine\n'));
-  console.log(chalk.gray('Phase 2: AI Assistant Code Verification System'));
+  console.log(chalk.cyan('\n🚀 CodeContext Pro Simple Execution Engine\n'));
+  console.log(chalk.gray('Local Development Mode: No Security Barriers'));
   
   // Initialize memory manager if project path is provided
   const projectPath = process.env.PROJECT_PATH || process.cwd();
@@ -189,11 +120,11 @@ async function startServer() {
   }
   
   app.listen(port, () => {
-    console.log(chalk.green(`\n✅ Execution Engine running on port ${port}`));
+    console.log(chalk.green(`\n✅ Simple Execution Engine running on port ${port}`));
     console.log(chalk.gray(`   Memory Integration: ${memoryManager ? '🧠 Active' : '❌ Disabled'}`));
-    console.log(chalk.gray(`   Docker Integration: 🐳 Ready`));
+    console.log(chalk.gray(`   Security Barriers: 🚫 Disabled (Local Dev Mode)`));
     console.log(chalk.gray(`   Multi-Language Support: 🌐 JS/TS/Python/Go/Rust`));
-    console.log(chalk.gray('\n🎯 Ready to verify AI assistant code suggestions!\n'));
+    console.log(chalk.gray('\n🚀 Ready for barrier-free code execution!\n'));
   });
 }
 
@@ -216,4 +147,4 @@ if (require.main === module) {
   });
 }
 
-export { app, SecureExecutionEngine, ExecutionMemoryManager };
+export { app, SimpleExecutionEngine, ExecutionMemoryManager };

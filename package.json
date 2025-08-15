@@ -1,7 +1,7 @@
 {
   "name": "codecontext-pro-monorepo",
-  "version": "1.0.1",
-  "description": "CodeContext Pro - Stop paying for AI amnesia. Complete AI assistant memory and execution system.",
+  "version": "2.0.0",
+  "description": "CodeContext (Local Edition) - Fully offline AI assistant memory & execution system.",
   "private": true,
   "workspaces": [
     "cli",
@@ -54,8 +54,5 @@
     "concurrently": "^7.6.0",
     "lerna": "^6.4.1"
   },
-  "dependencies": {
-    "firebase-functions": "^6.3.2",
-    "stripe": "^18.3.0"
-  }
+  "dependencies": {}
 }

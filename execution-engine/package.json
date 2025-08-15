@@ -1,7 +1,7 @@
 {
   "name": "codecontext-execution-engine",
-  "version": "0.1.0",
-  "description": "CodeContext Pro Phase 2: Execution Engine - AI Assistant Code Verification System",
+  "version": "2.0.0",
+  "description": "CodeContext Pro Execution Engine - Barrier-Free Local Development Edition",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
